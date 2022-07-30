@@ -71,3 +71,10 @@ Authors
 .. _EOL: https://endoflife.date/python
 .. _Google Ads Developer Blog: https://ads-developers.googleblog.com/
 .. _Protobuf Messages: https://developers.google.com/google-ads/api/docs/client-libs/python/protobuf-messages
+
+Example Execution
+--------
+
+.. code-block::
+
+  python exc_example.py -p examples/misc/get_pmax_campaign_assets_info.py
