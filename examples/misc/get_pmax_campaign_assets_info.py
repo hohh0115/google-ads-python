@@ -1,5 +1,6 @@
 
 import argparse
+from asyncio import constants
 import sys
 
 from google.ads.googleads.client import GoogleAdsClient
@@ -7,12 +8,11 @@ from google.ads.googleads.errors import GoogleAdsException
 from google.ads.googleads.v11.services.services.google_ads_service.client import GoogleAdsServiceClient
 from google.protobuf.json_format import MessageToDict
 
-from my_settings import CUSTOMER_ID, PMAX_CAMPAIGN_ID, compose_file_path
+from my_settings import CUSTOMER_NAME, CUSTOMER_ID, compose_file_path
 
 
 def main(
-    customer_id: str = CUSTOMER_ID,
-    pmax_campaign_id: str = PMAX_CAMPAIGN_ID
+    customer_id: str = CUSTOMER_ID
 ):
     client = GoogleAdsClient.load_from_storage(
         version="v11", path="google-ads.yaml"
@@ -259,56 +259,57 @@ def main(
             campaign.name,
             campaign.id
         FROM asset_group_asset
-        WHERE
-            campaign.id = {campaign_id}
+        # WHERE
+            # campaign.id = {campaign_id}
+        ORDER BY campaign.name ASC
     """
     results = getattr(
         ga_service.search(
             customer_id=customer_id,
-            query=query.format(campaign_id=pmax_campaign_id)
+            query=query
         ),
         'results'
     )
-    customer = results[0].customer
-    campaign = results[0].campaign
-    output_file_path = compose_file_path(file_name='PMAX_assets_info_{}.txt'.format(campaign.id))
-    with open(
-        output_file_path,
-        'w'
-    ) as f:
-        f.write(
-            f'''Customer: {customer.id}, {customer.descriptive_name}\n'''
-            f'''Campaign: {campaign.id}, {campaign.name}\n\n'''
+
+    contents = []
+    campaigns = set()
+    for row in results:
+        campaign = f'''ID: {row.campaign.id}, Name: {row.campaign.name}'''
+        campaigns.add(campaign)
+        contents.append(campaign + '\n\n')
+
+        asset_group = MessageToDict(
+            row.asset_group._pb,
+            preserving_proto_field_name=True
         )
-        for row in results:
-            asset_group = MessageToDict(
-                row.asset_group._pb,
-                preserving_proto_field_name=True
-            )
-            asset = MessageToDict(
-                row.asset._pb,
-                preserving_proto_field_name=True
-            )
-            asset_group_asset = MessageToDict(
-                row.asset_group_asset._pb,
-                preserving_proto_field_name=True
-            )
-            f.write(f'''AssetGroup:\n''')
-            for key, value in asset_group.items():
-                f.write(
-                    f'''\t{key}: {value}\n'''
-                )
-            f.write(f'''Asset:\n''')
-            for key, value in asset.items():
-                f.write(
-                    f'''\t{key}: {value}\n'''
-                )
-            f.write(f'''AssetGroupAsset:\n''')
-            for key, value in asset_group_asset.items():
-                f.write(
-                    f'''\t{key}: {value}\n'''
-                )
-            f.write(f'''\n# ==================================================== #\n\n''')
+        asset = MessageToDict(
+            row.asset._pb,
+            preserving_proto_field_name=True
+        )
+        asset_group_asset = MessageToDict(
+            row.asset_group_asset._pb,
+            preserving_proto_field_name=True
+        )
+        contents.append(f'''AssetGroup:\n''')
+        for key, value in asset_group.items():
+            contents.append(f'''\t{key}: {value}\n''')
+        contents.append(f'''Asset:\n''')
+        for key, value in asset.items():
+            contents.append(f'''\t{key}: {value}\n''')
+        contents.append(f'''AssetGroupAsset:\n''')
+        for key, value in asset_group_asset.items():
+            contents.append(f'''\t{key}: {value}\n''')
+        contents.append(f'''\n# ==================================================== #\n\n''')
+
+    customer = results[0].customer
+    contents.insert(0, f'''# ==================================================== #\n\n''')
+    # f-string expression part cannot include a backslash...
+    contents.insert(0, 'All campaigns:\n\t{}\n\n'.format(',\n\t'.join(list(campaigns))))
+    contents.insert(0, f'''Customer:\n\t{customer.id}, {customer.descriptive_name}.\n''')
+
+    output_file_path = compose_file_path(file_name='Customer_{}_PMax_asset_infos.txt'.format(CUSTOMER_NAME))
+    with open(output_file_path, 'w') as f:
+        f.write(''.join(contents))
     print('Done: {}'.format(output_file_path))
 
 

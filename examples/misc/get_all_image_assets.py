@@ -21,11 +21,14 @@ import sys
 from google.ads.googleads.client import GoogleAdsClient
 from google.ads.googleads.errors import GoogleAdsException
 
-_DEFAULT_PAGE_SIZE = 1000
+from my_settings import CUSTOMER_ID, _DEFAULT_PAGE_SIZE
 
 
-def main(client, customer_id, page_size):
+def main(customer_id: str = CUSTOMER_ID, page_size: int = _DEFAULT_PAGE_SIZE):
     """Main method, to run this code example as a standalone application."""
+    # GoogleAdsClient will read the google-ads.yaml configuration file in the
+    # home directory if none is specified.
+    client = GoogleAdsClient.load_from_storage(version="v11", path='google-ads.yaml')
     ga_service = client.get_service("GoogleAdsService")
 
     query = """
@@ -36,7 +39,8 @@ def main(client, customer_id, page_size):
           asset.image_asset.full_size.height_pixels,
           asset.image_asset.full_size.url
         FROM asset
-        WHERE asset.type = IMAGE"""
+        WHERE asset.type = IMAGE
+    """
 
     search_request = client.get_type("SearchGoogleAdsRequest")
     search_request.customer_id = customer_id
@@ -63,10 +67,6 @@ def main(client, customer_id, page_size):
 
 
 if __name__ == "__main__":
-    # GoogleAdsClient will read the google-ads.yaml configuration file in the
-    # home directory if none is specified.
-    googleads_client = GoogleAdsClient.load_from_storage(version="v11")
-
     parser = argparse.ArgumentParser(
         description="List all image assets for specified customer."
     )
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        main(googleads_client, args.customer_id, _DEFAULT_PAGE_SIZE)
+        main(args.customer_id, _DEFAULT_PAGE_SIZE)
     except GoogleAdsException as ex:
         print(
             f'Request with ID "{ex.request_id}" failed with status '

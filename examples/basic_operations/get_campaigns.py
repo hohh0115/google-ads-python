@@ -23,34 +23,81 @@ import sys
 
 from google.ads.googleads.client import GoogleAdsClient
 from google.ads.googleads.errors import GoogleAdsException
+from google.protobuf.json_format import MessageToDict
+
+from my_settings import CUSTOMER_NAME, CUSTOMER_ID, compose_file_path
 
 
-def main(client, customer_id):
+def main(
+    customer_id: str = CUSTOMER_ID
+):
+    # GoogleAdsClient will read the google-ads.yaml configuration file in the
+    # home directory if none is specified.
+    client = GoogleAdsClient.load_from_storage(version="v11", path='google-ads.yaml')
     ga_service = client.get_service("GoogleAdsService")
 
-    query = """
+    query = '''
         SELECT
-          campaign.id,
-          campaign.name
+            campaign.status,
+            campaign.ad_serving_optimization_status,
+            campaign.advertising_channel_type,
+            campaign.advertising_channel_sub_type,
+            campaign.network_settings.target_content_network,
+            campaign.network_settings.target_google_search,
+            campaign.network_settings.target_partner_search_network,
+            campaign.network_settings.target_search_network,
+            campaign.experiment_type,
+            campaign.serving_status,
+            campaign.bidding_strategy_type,
+            campaign.maximize_conversion_value.target_roas,
+            campaign.shopping_setting.merchant_id,
+            campaign.shopping_setting.sales_country,
+            campaign.shopping_setting.enable_local,
+            campaign.shopping_setting.campaign_priority,
+            campaign.targeting_setting.target_restrictions,
+            campaign.geo_target_type_setting.negative_geo_target_type,
+            campaign.geo_target_type_setting.positive_geo_target_type,
+            campaign.payment_mode,
+            campaign.optimization_goal_setting.optimization_goal_types,
+            campaign.base_campaign,
+            campaign.name,
+            campaign.id,
+            campaign.campaign_budget,
+            campaign.start_date,
+            campaign.end_date,
+            campaign.final_url_suffix,
+            campaign.performance_max_upgrade.performance_max_campaign,
+            campaign.performance_max_upgrade.pre_upgrade_campaign,
+            campaign.performance_max_upgrade.status
         FROM campaign
-        ORDER BY campaign.id"""
+        # WHERE campaign.advertising_channel_type = 'PERFORMANCE_MAX'
+    '''
 
     # Issues a search request using streaming.
-    stream = ga_service.search_stream(customer_id=customer_id, query=query)
-
-    for batch in stream:
-        for row in batch.results:
-            print(
-                f"Campaign with ID {row.campaign.id} and name "
-                f'"{row.campaign.name}" was found.'
-            )
+    stream = ga_service.search_stream(
+        customer_id=customer_id,
+        query=query
+    )
+    output_file_path = compose_file_path(file_name='Customer_{}_campaign_infos.txt'.format(CUSTOMER_NAME))
+    with open(
+        output_file_path,
+        'w'
+    ) as f:
+        for batch in stream:
+            for row in batch.results:
+                campaign: dict = MessageToDict(
+                    row.campaign._pb,
+                    preserving_proto_field_name=True
+                )
+                f.write(
+                    f'''Campaign with ID {campaign['id']} and name "{campaign['name']}":\n'''
+                )
+                for key, value in campaign.items():
+                    f.write(f'''\t{key}: {value}\n''')
+    print('Done: {}'.format(output_file_path))
 
 
 if __name__ == "__main__":
-    # GoogleAdsClient will read the google-ads.yaml configuration file in the
-    # home directory if none is specified.
-    googleads_client = GoogleAdsClient.load_from_storage(version="v11")
-
     parser = argparse.ArgumentParser(
         description="Lists all campaigns for specified customer."
     )
@@ -65,7 +112,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        main(googleads_client, args.customer_id)
+        main(args.customer_id)
     except GoogleAdsException as ex:
         print(
             f'Request with ID "{ex.request_id}" failed with status '
