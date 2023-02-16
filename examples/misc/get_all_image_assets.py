@@ -67,6 +67,10 @@ def main(customer_id: str = CUSTOMER_ID, page_size: int = _DEFAULT_PAGE_SIZE):
 
 
 if __name__ == "__main__":
+    # GoogleAdsClient will read the google-ads.yaml configuration file in the
+    # home directory if none is specified.
+    googleads_client = GoogleAdsClient.load_from_storage(version="v12")
+
     parser = argparse.ArgumentParser(
         description="List all image assets for specified customer."
     )

@@ -12,9 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""This code example generates a video ads reach forecast.
-"""
-
+"""This code example generates a video ads reach forecast."""
 
 import argparse
 import math
@@ -22,7 +20,6 @@ import sys
 
 from google.ads.googleads.client import GoogleAdsClient
 from google.ads.googleads.errors import GoogleAdsException
-
 
 ONE_MILLION = 1.0e6
 
@@ -41,17 +38,12 @@ def main(client, customer_id):
     currency_code = "USD"
     budget = 500000
 
-    _show_plannable_locations(client)
-    _show_plannable_products(client, location_id)
-    _forecast_manual_mix(
-        client, customer_id, location_id, currency_code, budget
-    )
-    _forecast_suggested_mix(
-        client, customer_id, location_id, currency_code, budget
-    )
+    show_plannable_locations(client)
+    show_plannable_products(client, location_id)
+    forecast_manual_mix(client, customer_id, location_id, currency_code, budget)
 
 
-def _show_plannable_locations(client):
+def show_plannable_locations(client):
     """Shows map of plannable locations to their IDs.
 
     Args:
@@ -69,7 +61,7 @@ def _show_plannable_locations(client):
 
 
 # [START forecast_reach_2]
-def _show_plannable_products(client, location_id):
+def show_plannable_products(client, location_id):
     """Lists plannable products for a given location.
 
     Args:
@@ -103,7 +95,7 @@ def _show_plannable_products(client, location_id):
 
 
 # [START forecast_reach]
-def _request_reach_curve(
+def request_reach_curve(
     client, customer_id, product_mix, location_id, currency_code
 ):
     """Creates a sample request for a given product mix.
@@ -178,7 +170,7 @@ def _request_reach_curve(
 
 
 # [START forecast_reach_3]
-def _forecast_manual_mix(
+def forecast_manual_mix(
     client, customer_id, location_id, currency_code, budget
 ):
     """Pulls a forecast for product mix created manually.
@@ -204,63 +196,16 @@ def _forecast_manual_mix(
         planned_product.budget_micros = math.trunc(budget * ONE_MILLION * split)
         product_mix.append(planned_product)
 
-    _request_reach_curve(
+    request_reach_curve(
         client, customer_id, product_mix, location_id, currency_code
     )
     # [END forecast_reach_3]
 
 
-# [START forecast_reach_1]
-def _forecast_suggested_mix(
-    client, customer_id, location_id, currency_code, budget
-):
-    """Pulls a forecast for a product mix based on your set of preferences.
-
-    Args:
-        client: an initialized GoogleAdsClient instance.
-        customer_id: The customer ID for the reach forecast.
-        product_mix: The product mix for the reach forecast.
-        location_id: The location ID to plan for.
-        currency_code: Three-character ISO 4217 currency code.
-        budget: Budget to allocate to the plan.
-    """
-    preferences = client.get_type("Preferences")
-    preferences.has_guaranteed_price = True
-    preferences.starts_with_sound = True
-    preferences.is_skippable = False
-    preferences.top_content_only = True
-    preferences.ad_length = (
-        client.enums.ReachPlanAdLengthEnum.FIFTEEN_OR_TWENTY_SECONDS
-    )
-
-    reach_plan_service = client.get_service("ReachPlanService")
-    request = client.get_type("GenerateProductMixIdeasRequest")
-    request.customer_id = customer_id
-    request.plannable_location_id = location_id
-    request.preferences = preferences
-    request.currency_code = currency_code
-    request.budget_micros = int(budget * ONE_MILLION)
-    mix_response = reach_plan_service.generate_product_mix_ideas(
-        request=request
-    )
-
-    product_mix = []
-    for product in mix_response.product_allocation:
-        planned_product = client.get_type("PlannedProduct")
-        planned_product.plannable_product_code = product.plannable_product_code
-        planned_product.budget_micros = product.budget_micros
-        product_mix.append(planned_product)
-
-    _request_reach_curve(
-        client, customer_id, product_mix, location_id, currency_code
-    )
-    # [END forecast_reach_1]
-
-
 if __name__ == "__main__":
     # GoogleAdsClient will read the google-ads.yaml configuration file in the
     # home directory if none is specified.
-    googleads_client = GoogleAdsClient.load_from_storage(version="v11")
+    googleads_client = GoogleAdsClient.load_from_storage(version="v12")
 
     parser = argparse.ArgumentParser(
         description="Generates video ads reach forecast."

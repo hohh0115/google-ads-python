@@ -342,7 +342,7 @@ def main(client, customer_id, asset_group_id, replace_existing_tree):
     if replace_existing_tree:
         # Retrieve a list of existing AssetGroupListingGroupFilters
         existing_listing_group_filters = (
-            _get_all_existing_listing_group_filter_assets_in_asset_group(
+            get_all_existing_listing_group_filter_assets_in_asset_group(
                 client, customer_id, asset_group_resource_name
             )
         )
@@ -449,12 +449,12 @@ def main(client, customer_id, asset_group_id, replace_existing_tree):
         customer_id=customer_id, mutate_operations=operations
     )
 
-    _print_response_details(operations, response)
+    print_response_details(operations, response)
     # [END add_performance_max_product_listing_group_tree]
 
 
 # [START add_performance_max_product_listing_group_tree_7]
-def _get_all_existing_listing_group_filter_assets_in_asset_group(
+def get_all_existing_listing_group_filter_assets_in_asset_group(
     client, customer_id, asset_group_resource_name
 ):
     """Fetches all of the listing group filters in an asset group.
@@ -487,7 +487,7 @@ def _get_all_existing_listing_group_filter_assets_in_asset_group(
     # [END add_performance_max_product_listing_group_tree_7]
 
 
-def _print_response_details(mutate_operations, response):
+def print_response_details(mutate_operations, response):
     """Prints the details of the GoogleAdsService.Mutate request.
 
     This uses the original list of mutate operations to map the operation
@@ -525,7 +525,7 @@ def _print_response_details(mutate_operations, response):
 if __name__ == "__main__":
     # GoogleAdsClient will read the google-ads.yaml configuration file in the
     # home directory if none is specified.
-    googleads_client = GoogleAdsClient.load_from_storage(version="v11")
+    googleads_client = GoogleAdsClient.load_from_storage(version="v12")
 
     parser = argparse.ArgumentParser(
         description=(
