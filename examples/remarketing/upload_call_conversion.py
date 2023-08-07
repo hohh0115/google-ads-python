@@ -45,7 +45,7 @@ def main(
         conversion_action_id: The ID of the conversion action to upload to.
         caller_id: The caller ID from which this call was placed. Caller ID is
             expected to be in E.164 format with preceding '+' sign,
-            e.g. '+16502531234'.
+            e.g. '+18005550100'.
         call_start_date_time: The date and time at which the call occurred. The
             format is 'yyyy-mm-dd hh:mm:ss+|-hh:mm',
             e.g. '2021-01-01 12:32:45-08:00'.
@@ -85,8 +85,8 @@ def main(
     request.customer_id = customer_id
     request.conversions = [call_conversion]
     request.partial_failure = True
-    upload_call_conversions_response = (
-        conversion_upload_service.upload_call_conversions(request=request)
+    upload_call_conversions_response = conversion_upload_service.upload_call_conversions(
+        request=request
     )
 
     # Print any partial errors returned.
@@ -112,7 +112,7 @@ def main(
 if __name__ == "__main__":
     # GoogleAdsClient will read the google-ads.yaml configuration file in the
     # home directory if none is specified.
-    googleads_client = GoogleAdsClient.load_from_storage(version="v12")
+    googleads_client = GoogleAdsClient.load_from_storage(version="v14")
 
     parser = argparse.ArgumentParser(
         description="Imports offline call conversion values for calls related "
@@ -140,7 +140,7 @@ if __name__ == "__main__":
         required=True,
         help="The caller ID from which this call was placed. Caller ID is "
         "expected to be in E.164 format with preceding '+' sign, "
-        "e.g. '+16502531234'.",
+        "e.g. '+18005550100'.",
     )
     parser.add_argument(
         "-s",

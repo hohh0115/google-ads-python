@@ -230,10 +230,8 @@ def create_offline_user_data_job(
         # Set the third party partner ID uploading the transactions.
         store_sales_third_party_metadata.partner_id = partner_id
 
-    create_offline_user_data_job_response = (
-        offline_user_data_job_service.create_offline_user_data_job(
-            customer_id=customer_id, job=offline_user_data_job
-        )
+    create_offline_user_data_job_response = offline_user_data_job_service.create_offline_user_data_job(
+        customer_id=customer_id, job=offline_user_data_job
     )
     offline_user_data_job_resource_name = (
         create_offline_user_data_job_response.resource_name
@@ -306,10 +304,8 @@ def add_transactions_to_offline_user_data_job(
     request.enable_warnings = True
     request.operations = operations
 
-    response = (
-        offline_user_data_job_service.add_offline_user_data_job_operations(
-            request=request,
-        )
+    response = offline_user_data_job_service.add_offline_user_data_job_operations(
+        request=request,
     )
     # [END enable_warnings_1]
 
@@ -399,16 +395,16 @@ def build_offline_user_data_job_operations(
     user_data_with_email_address = user_data_with_email_address_operation.create
     email_identifier = client.get_type("UserIdentifier")
     # Hash normalized email addresses based on SHA-256 hashing algorithm.
-    email_identifier.hashed_email = normalize_and_hash("customer@example.com")
+    email_identifier.hashed_email = normalize_and_hash("dana@example.com")
     state_identifier = client.get_type("UserIdentifier")
     state_identifier.address_info.state = "NY"
     user_data_with_email_address.user_identifiers.extend(
         [email_identifier, state_identifier]
     )
-    user_data_with_email_address.transaction_attribute.conversion_action = (
-        client.get_service("ConversionActionService").conversion_action_path(
-            customer_id, conversion_action_id
-        )
+    user_data_with_email_address.transaction_attribute.conversion_action = client.get_service(
+        "ConversionActionService"
+    ).conversion_action_path(
+        customer_id, conversion_action_id
     )
     user_data_with_email_address.transaction_attribute.currency_code = "USD"
     # Convert the transaction amount from $200 USD to micros.
@@ -434,17 +430,19 @@ def build_offline_user_data_job_operations(
     address_identifier = client.get_type("UserIdentifier")
     # First and last name must be normalized and hashed.
     address_identifier.address_info.hashed_first_name = normalize_and_hash(
-        "John"
+        "Dana"
     )
-    address_identifier.address_info.hashed_last_name = normalize_and_hash("Doe")
+    address_identifier.address_info.hashed_last_name = normalize_and_hash(
+        "Quinn"
+    )
     # Country and zip codes are sent in plain text.
     address_identifier.address_info.country_code = "US"
     address_identifier.address_info.postal_code = "10011"
     user_data_with_physical_address.user_identifiers.append(address_identifier)
-    user_data_with_physical_address.transaction_attribute.conversion_action = (
-        client.get_service("ConversionActionService").conversion_action_path(
-            customer_id, conversion_action_id
-        )
+    user_data_with_physical_address.transaction_attribute.conversion_action = client.get_service(
+        "ConversionActionService"
+    ).conversion_action_path(
+        customer_id, conversion_action_id
     )
     user_data_with_physical_address.transaction_attribute.currency_code = "EUR"
     # Convert the transaction amount from 450 EUR to micros.
@@ -565,7 +563,7 @@ def check_job_status(client, customer_id, offline_user_data_job_resource_name):
 if __name__ == "__main__":
     # GoogleAdsClient will read the google-ads.yaml configuration file in the
     # home directory if none is specified.
-    googleads_client = GoogleAdsClient.load_from_storage(version="v12")
+    googleads_client = GoogleAdsClient.load_from_storage(version="v14")
 
     parser = argparse.ArgumentParser(
         description="This example uploads offline data for store sales "

@@ -16,7 +16,7 @@
 
 Note that the example uses an exemptible policy-violating keyword by default.
 If you use a keyword that contains non-exemptible policy violations, they will
-not be sent for exemption request and you will still fail to create a keyword.
+not be sent for exemption request, and you will still fail to create a keyword.
 If you specify a keyword that doesn't violate any policies, this example will
 just add the keyword as usual, similar to what the AddKeywords example does.
 
@@ -226,7 +226,7 @@ def request_exemption(
 if __name__ == "__main__":
     # GoogleAdsClient will read the google-ads.yaml configuration file in the
     # home directory if none is specified.
-    googleads_client = GoogleAdsClient.load_from_storage(version="v12")
+    googleads_client = GoogleAdsClient.load_from_storage(version="v14")
 
     parser = argparse.ArgumentParser(
         description="Demonstrates how to request an exemption for policy "

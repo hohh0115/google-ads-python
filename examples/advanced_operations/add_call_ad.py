@@ -46,7 +46,7 @@ def main(
         client: an initialized GoogleAdsClient instance.
         customer_id: a client customer ID.
         ad_group_id: an ad group ID.
-        phone_number: a phone number for your business, e.g. '(123) 456-7890'.
+        phone_number: a phone number for your business, e.g. '(800) 555-0100'.
         phone_country: a two-letter ISO-3166 code.
         conversion_action_id: an ID for a conversion action.
     """
@@ -101,7 +101,7 @@ def main(
 if __name__ == "__main__":
     # GoogleAdsClient will read the google-ads.yaml configuration file in the
     # home directory if none is specified.
-    googleads_client = GoogleAdsClient.load_from_storage(version="v12")
+    googleads_client = GoogleAdsClient.load_from_storage(version="v14")
 
     parser = argparse.ArgumentParser(
         description=("Adds a call extension to a specific account.")
@@ -115,18 +115,14 @@ if __name__ == "__main__":
         help="The Google Ads customer ID.",
     )
     parser.add_argument(
-        "-a",
-        "--ad_group_id",
-        type=str,
-        required=True,
-        help="An ad group ID.",
+        "-a", "--ad_group_id", type=str, required=True, help="An ad group ID.",
     )
     parser.add_argument(
         "-n",
         "--phone_number",
         type=str,
         required=True,
-        help=("A phone number for your business, e.g. '(123) 456-7890'"),
+        help=("A phone number for your business, e.g. '(800) 555-0100'"),
     )
     parser.add_argument(
         "-p",

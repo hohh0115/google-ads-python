@@ -1,4 +1,45 @@
-* 18.2.0
+* 21.2.0
+- Google Ads API v14 release.
+- Lower minimum version requirement for dependencies:
+  - google-api-core
+  - googleapis-common-protos
+  - proto-plus
+  - protobuf.
+- Update unit tests to run with lowest-supported Google-maintained dependencies.
+- Update upload_conversion_enhancement example with recommended placeholder names.
+- Update place_id field to place_ids in add_performance_max_for_travel_goals_campaign example.
+- Add add_things_to_do_ad example.
+- Remove examples:
+  - generate_forecast_metrics
+  - generate_historical_metrics
+  - get_campaign_criterion_bid_modifier_simulations
+
+* 21.1.0
+- Google Ads API v13_1 release.
+- Add Python versions 3.8, 3.9, and 3.10 to list of classifiers.
+- Remove restatement functionality from upload_conversion_enhancement example.
+- Move examples/hotel_ads to examples/travel
+- Update metadata_interceptor tests to dynamically retrieve Python version.
+
+* 21.0.0
+- Remove support for Google Ads API v11.
+- Update examples to use recommended example PII.
+- Increase maximum support version of google-auth-oauthlib to < 2.0.0.
+- Fix bug in add_customer_match_user_list example.
+- Add add_dynamic_page_feed_asset example.
+- Add add_performance_max_for_travel_goals_campaign example.
+- Update create_experiment example to get campaign ID from experiment arm response.
+
+* 20.0.0
+- Remove support for Google Ads API v10.
+- Google Ads API v13 release.
+- Extend version range for proto-plus and google-api-core
+- Update add_customer_match_user_list example with more complex user identifiers
+- Remove add_expression_rule_user_list example
+- Update remarketing examples to use flexible rule user lists
+- Update get_ad_group_bid_modifiers example to remove preferred content criteria
+
+* 19.0.0
 - Google Ads API v12 release.
 - Bump proto-plus to 1.22.1.
 - Remove example for Add Dynamic Page Feed.

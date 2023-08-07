@@ -33,7 +33,7 @@ _logger = logging.getLogger(__name__)
 
 _SERVICE_CLIENT_TEMPLATE = "{}Client"
 
-_VALID_API_VERSIONS = ["v12", "v11", "v10"]
+_VALID_API_VERSIONS = ["v14", "v13", "v12"]
 _DEFAULT_VERSION = _VALID_API_VERSIONS[0]
 
 # Retrieve the version of this client library to be sent in the user-agent
@@ -83,7 +83,7 @@ class _EnumGetter:
     def __dir__(self):
         """Overrides behavior when dir() is called on instances of this class.
 
-        It's useful to use dir() to see a list of available attrbutes. Since
+        It's useful to use dir() to see a list of available attributes. Since
         this class exposes all the enums in the API it borrows the __all__
         property from the corresponding enums module.
         """
@@ -126,7 +126,7 @@ class _EnumGetter:
         """Returns self serialized as a dict.
 
         Since this class overrides __getattr__ we define this method to help
-        with pickling, which is imporant to avoid recursion depth errors when
+        with pickling, which is important to avoid recursion depth errors when
         pickling this class or the GoogleAdsClient or using multiprocessing.
 
         Returns:
@@ -138,7 +138,7 @@ class _EnumGetter:
         """Deserializes self with the given dictionary.
 
         Since this class overrides __getattr__ we define this method to help
-        with pickling, which is imporant to avoid recursion depth errors when
+        with pickling, which is important to avoid recursion depth errors when
         pickling this class or the GoogleAdsClient or using multiprocessing.
 
         Args:
@@ -203,10 +203,11 @@ class GoogleAdsClient:
             version_module = import_module(f"google.ads.googleads.{version}")
         except ImportError:
             raise ValueError(
-                'Specified Google Ads API version "{}" does not '
-                'exist. Valid API versions are: "{}"'.format(
-                    version, '", "'.join(_VALID_API_VERSIONS)
-                )
+                f"There was an error importing the "
+                f'"google.ads.googleads.{version}" module. Please check that '
+                f'"{version}" is a valid API version. Here are the current '
+                "API versions supported by this library: "
+                f"{', '.join(_VALID_API_VERSIONS)}."
             )
         return version_module
 
